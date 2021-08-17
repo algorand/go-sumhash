@@ -4,6 +4,8 @@ import (
 	"encoding/binary"
 	"hash"
 	"io"
+
+	"golang.org/x/crypto/sha3"
 )
 
 // Matrix is the NxM matrix A with elements in Z_q where q=2^64
@@ -28,6 +30,18 @@ func RandomMatrix(rand io.Reader, N int, compressionFactor int) Matrix {
 		}
 	}
 	return A
+}
+
+func RandomMatrixFromSeed(seed []byte, N int, compressionFactor int) Matrix {
+	M := compressionFactor * N * 64 // bits
+
+	xof := sha3.NewShake256()
+	binary.Write(xof, binary.LittleEndian, uint16(64)) // u=64
+	binary.Write(xof, binary.LittleEndian, uint16(N))
+	binary.Write(xof, binary.LittleEndian, uint16(M))
+	xof.Write(seed)
+
+	return RandomMatrix(xof, N, compressionFactor)
 }
 
 func (A Matrix) LookupTable() LookupTable {
