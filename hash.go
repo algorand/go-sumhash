@@ -150,6 +150,10 @@ func (d *digest) BlockSize() int { return d.blockSize }
 
 func (d *digest) Write(p []byte) (nn int, err error) {
 	nn = len(p)
+	// Check if the new length (in bits) overflows.
+	if uint64(nn) >= (1<<61)-d.len {
+		panic("digest length overflows")
+	}
 	d.len += uint64(nn)
 	if d.nx > 0 {
 		n := copy(d.x[d.nx:], p)
