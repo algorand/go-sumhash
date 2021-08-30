@@ -17,7 +17,7 @@ type LookupTable [][][256]uint64
 
 // RandomMatrix generates a random sumhash matrix by reading from rand.
 // n is the number of rows in the matrix and m is the number of bits in the input message.
-func RandomMatrix(rand io.Reader, n int, m int) Matrix {
+func RandomMatrix(rand io.Reader, n int, m int) (Matrix, error) {
 	A := make([][]uint64, n)
 	w := make([]byte, 8)
 	for i := range A {
@@ -25,15 +25,15 @@ func RandomMatrix(rand io.Reader, n int, m int) Matrix {
 		for j := range A[i] {
 			_, err := rand.Read(w)
 			if err != nil {
-				panic(err)
+				return nil, err
 			}
 			A[i][j] = binary.LittleEndian.Uint64(w)
 		}
 	}
-	return A
+	return A, nil
 }
 
-func RandomMatrixFromSeed(seed []byte, n int, m int) Matrix {
+func RandomMatrixFromSeed(seed []byte, n int, m int) (Matrix, error) {
 	xof := sha3.NewShake256()
 	binary.Write(xof, binary.LittleEndian, uint16(64)) // u=64
 	binary.Write(xof, binary.LittleEndian, uint16(n))

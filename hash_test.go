@@ -10,7 +10,10 @@ import (
 func TestCompression(t *testing.T) {
 	n := 14
 	m := n * 64 * 2
-	A := RandomMatrix(rand.Reader, n, m)
+	A, err := RandomMatrix(rand.Reader, n, m)
+	if err != nil {
+		t.Fatal(err)
+	}
 	At := A.LookupTable()
 
 	if A.InputLen() != m/8 {
@@ -48,7 +51,10 @@ func TestHash(t *testing.T) {
 }
 
 func testHashParams(t *testing.T, n int, m int) {
-	A := RandomMatrix(rand.Reader, n, m)
+	A, err := RandomMatrix(rand.Reader, n, m)
+	if err != nil {
+		t.Fatal(err)
+	}
 	At := A.LookupTable()
 
 	h1 := New(A)
@@ -87,7 +93,10 @@ func testHashParams(t *testing.T, n int, m int) {
 }
 
 func BenchmarkMatrix(b *testing.B) {
-	A := RandomMatrix(rand.Reader, 14, 14*64*2)
+	A, err := RandomMatrix(rand.Reader, 14, 14*64*2)
+	if err != nil {
+		b.Fatal(err)
+	}
 	msg := make([]byte, A.InputLen())
 	dst := make([]uint64, A.OutputLen())
 	rand.Read(msg)
@@ -99,7 +108,10 @@ func BenchmarkMatrix(b *testing.B) {
 }
 
 func BenchmarkLookupTable(b *testing.B) {
-	A := RandomMatrix(rand.Reader, 14, 14*64*2)
+	A, err := RandomMatrix(rand.Reader, 14, 14*64*2)
+	if err != nil {
+		b.Fatal(err)
+	}
 	At := A.LookupTable()
 	msg := make([]byte, A.InputLen())
 	dst := make([]uint64, A.OutputLen())
