@@ -8,19 +8,20 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
-// Matrix is the NxM matrix A with elements in Z_q where q=2^64
+// Matrix is the n×m sumhash matrix A with elements in Z_q where q=2^64
 type Matrix [][]uint64
 
 // LookupTable is the precomputed sums from a matrix for every possible byte of input.
-// Its dimensions are [N][M/8][256]uint64.
+// Its dimensions are [n][m/8][256]uint64.
 type LookupTable [][][256]uint64
 
-func RandomMatrix(rand io.Reader, N int, compressionFactor int) Matrix {
-	M := compressionFactor * N * 64 // bits
-	A := make([][]uint64, N)
+// RandomMatrix generates a random sumhash matrix by reading from rand.
+// n is the number of rows in the matrix and m is the number of bits in the input message.
+func RandomMatrix(rand io.Reader, n int, m int) Matrix {
+	A := make([][]uint64, n)
 	w := make([]byte, 8)
 	for i := range A {
-		A[i] = make([]uint64, M)
+		A[i] = make([]uint64, m)
 		for j := range A[i] {
 			_, err := rand.Read(w)
 			if err != nil {
@@ -32,26 +33,24 @@ func RandomMatrix(rand io.Reader, N int, compressionFactor int) Matrix {
 	return A
 }
 
-func RandomMatrixFromSeed(seed []byte, N int, compressionFactor int) Matrix {
-	M := compressionFactor * N * 64 // bits
-
+func RandomMatrixFromSeed(seed []byte, n int, m int) Matrix {
 	xof := sha3.NewShake256()
 	binary.Write(xof, binary.LittleEndian, uint16(64)) // u=64
-	binary.Write(xof, binary.LittleEndian, uint16(N))
-	binary.Write(xof, binary.LittleEndian, uint16(M))
+	binary.Write(xof, binary.LittleEndian, uint16(n))
+	binary.Write(xof, binary.LittleEndian, uint16(m))
 	xof.Write(seed)
 
-	return RandomMatrix(xof, N, compressionFactor)
+	return RandomMatrix(xof, n, m)
 }
 
 func (A Matrix) LookupTable() LookupTable {
-	N := len(A)
-	M := len(A[0])
-	At := make(LookupTable, N)
+	n := len(A)
+	m := len(A[0])
+	At := make(LookupTable, n)
 	for i := range A {
-		At[i] = make([][256]uint64, M/8)
+		At[i] = make([][256]uint64, m/8)
 
-		for j := 0; j < M; j += 8 {
+		for j := 0; j < m; j += 8 {
 			for b := 0; b < 256; b++ {
 				At[i][j/8][b] = sumBits(A[i][j:j+8], byte(b))
 			}

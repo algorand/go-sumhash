@@ -8,24 +8,23 @@ import (
 )
 
 func TestCompression(t *testing.T) {
-	N := 14
-	C := 4
-	A := RandomMatrix(rand.Reader, N, C)
+	n := 14
+	m := n * 64 * 2
+	A := RandomMatrix(rand.Reader, n, m)
 	At := A.LookupTable()
 
-	expectedInputBytes := C * N * 8
-	if A.InputLen() != expectedInputBytes {
-		t.Fatalf("unexpected input len (A): got %d, want %d", A.InputLen(), expectedInputBytes)
+	if A.InputLen() != m/8 {
+		t.Fatalf("unexpected input len (A): got %d, want %d", A.InputLen(), m/8)
 	}
-	if At.InputLen() != expectedInputBytes {
-		t.Fatalf("unexpected input len (At): got %d, want %d", At.InputLen(), expectedInputBytes)
+	if At.InputLen() != m/8 {
+		t.Fatalf("unexpected input len (At): got %d, want %d", At.InputLen(), m/8)
 	}
 
-	if A.OutputLen() != N {
-		t.Fatalf("unexpected output len (A): got %d, want %d", A.OutputLen(), N)
+	if A.OutputLen() != n {
+		t.Fatalf("unexpected output len (A): got %d, want %d", A.OutputLen(), n)
 	}
-	if At.OutputLen() != N {
-		t.Fatalf("unexpected output len (At): got %d, want %d", At.OutputLen(), N)
+	if At.OutputLen() != n {
+		t.Fatalf("unexpected output len (At): got %d, want %d", At.OutputLen(), n)
 	}
 
 	dst1 := make([]uint64, A.OutputLen())
@@ -44,22 +43,21 @@ func TestCompression(t *testing.T) {
 }
 
 func TestHash(t *testing.T) {
-	testHashParams(t, 14, 4)
-	testHashParams(t, 10, 2)
+	testHashParams(t, 14, 14*64*4)
+	testHashParams(t, 10, 10*64*2)
 }
 
-func testHashParams(t *testing.T, N int, C int) {
-	A := RandomMatrix(rand.Reader, N, C)
+func testHashParams(t *testing.T, n int, m int) {
+	A := RandomMatrix(rand.Reader, n, m)
 	At := A.LookupTable()
 
 	h1 := New(A)
 	h2 := New(At)
 
-	M := N * C * 64
-	if h1.Size() != N*8 || h1.BlockSize() != M/8-N*8 {
+	if h1.Size() != n*8 || h1.BlockSize() != m/8-n*8 {
 		t.Fatalf("h1 has unexpected size/blocksize values")
 	}
-	if h2.Size() != N*8 || h2.BlockSize() != M/8-N*8 {
+	if h2.Size() != n*8 || h2.BlockSize() != m/8-n*8 {
 		t.Fatalf("h2 has unexpected size/blocksize values")
 	}
 
@@ -89,7 +87,7 @@ func testHashParams(t *testing.T, N int, C int) {
 }
 
 func BenchmarkMatrix(b *testing.B) {
-	A := RandomMatrix(rand.Reader, 14, 4)
+	A := RandomMatrix(rand.Reader, 14, 14*64*2)
 	msg := make([]byte, A.InputLen())
 	dst := make([]uint64, A.OutputLen())
 	rand.Read(msg)
@@ -101,7 +99,7 @@ func BenchmarkMatrix(b *testing.B) {
 }
 
 func BenchmarkLookupTable(b *testing.B) {
-	A := RandomMatrix(rand.Reader, 14, 4)
+	A := RandomMatrix(rand.Reader, 14, 14*64*2)
 	At := A.LookupTable()
 	msg := make([]byte, A.InputLen())
 	dst := make([]uint64, A.OutputLen())
