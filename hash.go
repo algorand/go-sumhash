@@ -199,6 +199,8 @@ func (d *digest) Sum(in []byte) []byte {
 func (d *digest) checkSum() []byte {
 	var B uint64 = uint64(d.blockSize)
 	var P uint64 = B - 16
+
+	len := d.len << 3
 	// Padding. Add a 1 bit and 0 bits until P bytes mod B.
 	tmp := make([]byte, B)
 	tmp[0] = 0x80
@@ -209,7 +211,6 @@ func (d *digest) checkSum() []byte {
 	}
 
 	// Length in bits. Note: sumhash uses 128 bits to represent the length.
-	len := d.len << 3
 	binary.LittleEndian.PutUint64(tmp[0:], len)
 	binary.LittleEndian.PutUint64(tmp[8:], 0) // upper 64 bits are always zero, because len variable has type uint64
 	d.Write(tmp[0:16])
