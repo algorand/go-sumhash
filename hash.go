@@ -62,7 +62,7 @@ func (A Matrix) LookupTable() LookupTable {
 func sumBits(as []uint64, b byte) uint64 {
 	var x uint64
 	for i := 0; i < 8; i++ {
-		if b<<i&0x80 > 0 {
+		if b>>i&1 == 1 {
 			x += as[i]
 		}
 	}
@@ -87,7 +87,7 @@ func (A Matrix) Compress(dst []uint64, msg []byte) {
 		x = 0
 		for j := range msg {
 			for b := 0; b < 8; b++ {
-				if (msg[j]<<b)&0x80 > 0 {
+				if (msg[j]>>b)&1 == 1 {
 					x += A[i][8*j+b]
 				}
 			}
