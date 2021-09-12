@@ -57,8 +57,8 @@ func testHashParams(t *testing.T, n int, m int) {
 	}
 	At := A.LookupTable()
 
-	h1 := New(A)
-	h2 := New(At)
+	h1 := New(A, nil)
+	h2 := New(At, nil)
 
 	if h1.Size() != n*8 || h1.BlockSize() != m/8-n*8 {
 		t.Fatalf("h1 has unexpected size/blocksize values")

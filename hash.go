@@ -2,6 +2,7 @@ package sumhash
 
 import (
 	"encoding/binary"
+	"fmt"
 	"hash"
 	"io"
 
@@ -75,6 +76,10 @@ type Compressor interface {
 	OutputLen() int // len(dst)
 }
 
+func BlockSize(c Compressor) int {
+	return c.InputLen() - c.OutputLen()*8
+}
+
 func (A Matrix) InputLen() int  { return len(A[0]) / 8 }
 func (A Matrix) OutputLen() int { return len(A) }
 
@@ -123,15 +128,26 @@ type digest struct {
 	x   []byte
 	nx  int
 	len uint64
+
+	salt []byte // salt block
 }
 
-func New(c Compressor) hash.Hash {
+// New returns a new hash.Hash computing a sumhash checksum.
+// If salt is nil, then hash.Hash computes a hash output in unsalted mode.
+// Otherwise, salt should be BlockSize(c) bytes, and the hash is computed in salted mode.
+func New(c Compressor, salt []byte) hash.Hash {
 	d := new(digest)
 	d.c = c
 	d.size = d.c.OutputLen() * 8
 	d.blockSize = d.c.InputLen() - d.size
 	d.x = make([]byte, d.blockSize)
 	d.h = make([]uint64, c.OutputLen())
+
+	if salt != nil && len(salt) != d.blockSize {
+		panic(fmt.Sprintf("bad salt size: want %d, got %d", d.blockSize, len(salt)))
+	}
+	d.salt = salt
+
 	d.Reset()
 	return d
 }
@@ -142,6 +158,13 @@ func (d *digest) Reset() {
 	}
 	d.nx = 0
 	d.len = 0
+
+	if d.salt != nil {
+		// Write an initial block of zeros, effectively
+		// prepending the salt to the input.
+		zeros := make([]byte, d.blockSize)
+		d.Write(zeros)
+	}
 }
 
 func (d *digest) Size() int      { return d.size }
@@ -183,6 +206,7 @@ func (d *digest) copy() *digest {
 		x:         make([]byte, len(d.x)),
 		nx:        d.nx,
 		len:       d.len,
+		salt:      d.salt,
 	}
 	copy(dd.h, d.h)
 	copy(dd.x, d.x)
@@ -227,12 +251,26 @@ func (d *digest) checkSum() []byte {
 }
 
 func blocks(d *digest, data []byte) {
-	msg := make([]byte, d.c.InputLen())
+	cin := make([]byte, d.c.InputLen())
+	block := cin[d.size : d.size+d.blockSize]
 	for i := 0; i <= len(data)-d.blockSize; i += d.blockSize {
 		for j := range d.h {
-			binary.LittleEndian.PutUint64(msg[8*j:8*j+8], d.h[j])
+			binary.LittleEndian.PutUint64(cin[8*j:8*j+8], d.h[j])
 		}
-		copy(msg[d.size:d.size+d.blockSize], data[i:i+d.blockSize])
-		d.c.Compress(d.h, msg)
+
+		input := data[i : i+d.blockSize]
+		if d.salt != nil {
+			xorBytes(block, input, d.salt)
+		} else {
+			copy(block, input)
+		}
+
+		d.c.Compress(d.h, cin)
+	}
+}
+
+func xorBytes(dst []byte, a, b []byte) {
+	for i := range dst {
+		dst[i] = a[i] ^ b[i]
 	}
 }
