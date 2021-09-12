@@ -174,7 +174,7 @@ func (d *digest) Write(p []byte) (nn int, err error) {
 	nn = len(p)
 	// Check if the new length (in bits) overflows our counter capacity.
 	if uint64(nn) >= (1<<61)-d.len {
-		panic("digest length overflows")
+		panic(fmt.Sprintf("length overflow: already wrote %d bytes, trying to write %d bytes", d.len, nn))
 	}
 	d.len += uint64(nn)
 	if d.nx > 0 { // continue with existing buffer, if nonempty
