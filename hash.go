@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
-// Matrix is the n×m sumhash matrix A with elements in Z_q where q=2^64
+// Matrix is the n-by-m sumhash matrix A with elements in Z_q where q=2^64
 type Matrix [][]uint64
 
 // LookupTable is the precomputed sums from a matrix for every possible byte of input.
