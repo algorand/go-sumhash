@@ -71,21 +71,21 @@ func sumBits(as []uint64, b byte) uint64 {
 }
 
 type Compressor interface {
-	Compress(dst []uint64, input []byte)
+	Compress(dst []byte, input []byte)
 	InputLen() int  // len(input)
 	OutputLen() int // len(dst)
 }
 
 func BlockSize(c Compressor) int {
-	return c.InputLen() - c.OutputLen()*8
+	return c.InputLen() - c.OutputLen()
 }
 
 func (A Matrix) InputLen() int  { return len(A[0]) / 8 }
-func (A Matrix) OutputLen() int { return len(A) }
+func (A Matrix) OutputLen() int { return len(A) * 8 }
 
-func (A Matrix) Compress(dst []uint64, msg []byte) {
+func (A Matrix) Compress(dst []byte, msg []byte) {
 	_ = msg[len(A[0])/8-1]
-	_ = dst[len(A)-1]
+	_ = dst[len(A)*8-1]
 
 	var x uint64
 	for i := range A {
@@ -97,16 +97,16 @@ func (A Matrix) Compress(dst []uint64, msg []byte) {
 				}
 			}
 		}
-		dst[i] = x
+		binary.LittleEndian.PutUint64(dst[8*i:8*i+8], x)
 	}
 }
 
 func (A LookupTable) InputLen() int  { return len(A[0]) }
-func (A LookupTable) OutputLen() int { return len(A) }
+func (A LookupTable) OutputLen() int { return len(A) * 8 }
 
-func (A LookupTable) Compress(dst []uint64, msg []byte) {
+func (A LookupTable) Compress(dst []byte, msg []byte) {
 	_ = msg[len(A[0])-1]
-	_ = dst[len(A)-1]
+	_ = dst[len(A)*8-1]
 
 	var x uint64
 	for i := range A {
@@ -114,7 +114,7 @@ func (A LookupTable) Compress(dst []uint64, msg []byte) {
 		for j := range A[i] {
 			x += A[i][j][msg[j]]
 		}
-		dst[i] = x
+		binary.LittleEndian.PutUint64(dst[8*i:8*i+8], x)
 	}
 }
 
@@ -124,10 +124,10 @@ type digest struct {
 	size      int // number of bytes in a hash output
 	blockSize int // number of bytes in an input block, per compression
 
-	h   []uint64 // hash chain (from last compression, or IV)
-	x   []byte   // data written since last compression
-	nx  int      // number of input bytes written since last compression
-	len uint64   // total number of input bytes written overall
+	h   []byte // hash chain (from last compression, or IV)
+	x   []byte // data written since last compression
+	nx  int    // number of input bytes written since last compression
+	len uint64 // total number of input bytes written overall
 
 	salt []byte // salt block
 }
@@ -138,10 +138,10 @@ type digest struct {
 func New(c Compressor, salt []byte) hash.Hash {
 	d := new(digest)
 	d.c = c
-	d.size = d.c.OutputLen() * 8
+	d.size = d.c.OutputLen()
 	d.blockSize = d.c.InputLen() - d.size
 	d.x = make([]byte, d.blockSize)
-	d.h = make([]uint64, c.OutputLen())
+	d.h = make([]byte, c.OutputLen())
 
 	if salt != nil && len(salt) != d.blockSize {
 		panic(fmt.Sprintf("bad salt size: want %d, got %d", d.blockSize, len(salt)))
@@ -202,7 +202,7 @@ func (d *digest) copy() *digest {
 		c:         d.c,
 		size:      d.size,
 		blockSize: d.blockSize,
-		h:         make([]uint64, len(d.h)),
+		h:         make([]byte, len(d.h)),
 		x:         make([]byte, len(d.x)),
 		nx:        d.nx,
 		len:       d.len,
@@ -245,11 +245,7 @@ func (d *digest) checkSum() []byte {
 		panic("d.nx != 0")
 	}
 
-	digest := make([]byte, d.size)
-	for i := range d.h {
-		binary.LittleEndian.PutUint64(digest[8*i:8*i+8], d.h[i])
-	}
-	return digest
+	return d.h
 }
 
 // blocks hashes full blocks of data. len(data) must be a multiple of d.blockSize.
@@ -257,9 +253,7 @@ func blocks(d *digest, data []byte) {
 	cin := make([]byte, d.c.InputLen())
 	block := cin[d.size : d.size+d.blockSize]
 	for i := 0; i <= len(data)-d.blockSize; i += d.blockSize {
-		for j := range d.h {
-			binary.LittleEndian.PutUint64(cin[8*j:8*j+8], d.h[j])
-		}
+		copy(cin[0:d.size], d.h)
 
 		input := data[i : i+d.blockSize]
 		if d.salt != nil {

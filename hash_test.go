@@ -26,15 +26,15 @@ func TestCompression(t *testing.T) {
 		t.Fatalf("unexpected input len (At): got %d, want %d", At.InputLen(), m/8)
 	}
 
-	if A.OutputLen() != n {
-		t.Fatalf("unexpected output len (A): got %d, want %d", A.OutputLen(), n)
+	if A.OutputLen() != n*8 {
+		t.Fatalf("unexpected output len (A): got %d, want %d", A.OutputLen(), n*8)
 	}
-	if At.OutputLen() != n {
-		t.Fatalf("unexpected output len (At): got %d, want %d", At.OutputLen(), n)
+	if At.OutputLen() != n*8 {
+		t.Fatalf("unexpected output len (At): got %d, want %d", At.OutputLen(), n*8)
 	}
 
-	dst1 := make([]uint64, A.OutputLen())
-	dst2 := make([]uint64, A.OutputLen())
+	dst1 := make([]byte, A.OutputLen())
+	dst2 := make([]byte, A.OutputLen())
 	msg := make([]byte, A.InputLen())
 
 	count := 1000
@@ -134,7 +134,7 @@ func BenchmarkMatrix(b *testing.B) {
 		b.Fatal(err)
 	}
 	msg := make([]byte, A.InputLen())
-	dst := make([]uint64, A.OutputLen())
+	dst := make([]byte, A.OutputLen())
 	rand.Read(msg)
 	b.ResetTimer()
 
@@ -150,7 +150,7 @@ func BenchmarkLookupTable(b *testing.B) {
 	}
 	At := A.LookupTable()
 	msg := make([]byte, A.InputLen())
-	dst := make([]uint64, A.OutputLen())
+	dst := make([]byte, A.OutputLen())
 	rand.Read(msg)
 	b.ResetTimer()
 
