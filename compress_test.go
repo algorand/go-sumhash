@@ -53,7 +53,7 @@ func TestExpectedOutput(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	h := New(A, nil)
+	h := genericSumhashNew(A, nil)
 
 	input := make([]byte, 6000)
 	v := sha3.NewShake256()
@@ -72,12 +72,12 @@ func TestExpectedOutput(t *testing.T) {
 	v.Write([]byte("sumhash salt"))
 	v.Read(salt)
 
-	hs := New(A, salt)
+	hs := genericSumhashNew(A, salt)
 	hs.Write(input)
 	saltedSum := hs.Sum(nil)
 	expectedSaltedSum := "18ff67b5a2f6f864cd046845f036d2a2be5e91c0324610fdf48921c71382decfdba1c0f619b190953f46c9bb68fb4483300af30f86a62fec384f8c9f4ed6da2debaeec681240362ce7c872cd4b82cad1"
 	if hex.EncodeToString(saltedSum) != expectedSaltedSum {
-		t.Fatalf("got %x, want %s", sum, expectedSum)
+		t.Fatalf("got %x, want %s", saltedSum, expectedSaltedSum)
 	}
 }
 
@@ -93,8 +93,8 @@ func testHashParams(t *testing.T, n int, m int) {
 	}
 	At := A.LookupTable()
 
-	h1 := New(A, nil)
-	h2 := New(At, nil)
+	h1 := genericSumhashNew(A, nil)
+	h2 := genericSumhashNew(At, nil)
 
 	if h1.Size() != n*8 || h1.BlockSize() != m/8-n*8 {
 		t.Fatalf("h1 has unexpected size/blocksize values")
