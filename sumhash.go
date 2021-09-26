@@ -23,7 +23,7 @@ type digest struct {
 // New returns a new hash.Hash computing a sumhash checksum.
 // If salt is nil, then hash.Hash computes a hash output in unsalted mode.
 // Otherwise, salt should be BlockSize(c) bytes, and the hash is computed in salted mode.
-func genericSumhashNew(c Compressor, salt []byte) hash.Hash {
+func sumhashNew(c Compressor, salt []byte) hash.Hash {
 	d := new(digest)
 	d.c = c
 	d.size = d.c.OutputLen()
@@ -115,8 +115,8 @@ func (d *digest) Sum(in []byte) []byte {
 }
 
 func (d *digest) checkSum() []byte {
-	var B uint64 = uint64(d.blockSize)
-	var P uint64 = B - 16
+	B := uint64(d.blockSize)
+	P := B - 16
 
 	bitlen := d.len << 3 // number of input bits written
 
@@ -128,7 +128,6 @@ func (d *digest) checkSum() []byte {
 	} else {
 		d.Write(tmp[0 : B+P-d.len%B])
 	}
-
 
 	// Write length in bits, using 128 bits (16 bytes) to represent it.
 	// The upper 64 bits are always zero, because bitlen has type uint64.

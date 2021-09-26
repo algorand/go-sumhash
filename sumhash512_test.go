@@ -76,7 +76,6 @@ func TestSumHash512Reset(t *testing.T) {
 		t.Fatalf("write return %d expected %d", bytesWritten, len(input))
 	}
 
-
 	input = make([]byte, 6000)
 	v = sha3.NewShake256()
 	v.Write([]byte("sumhash input"))
@@ -98,7 +97,6 @@ func TestSumHash512Reset(t *testing.T) {
 		t.Fatalf("got %x, want %s", sum, expectedSum)
 	}
 }
-
 
 func TestSumHash512ChecksumWithValue(t *testing.T) {
 	input := make([]byte, 6000)
@@ -130,9 +128,9 @@ func BenchmarkHashInterface(b *testing.B) {
 	msg := make([]byte, 600)
 
 	rand.Read(msg)
-	b.ResetTimer()
-
 	h := New(nil)
+
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		h.Reset()
 		h.Write(msg)

@@ -22,15 +22,14 @@ type sumhash215Digest struct {
 // If salt is nil, then hash.Hash computes a hash output in unsalted mode.
 // Otherwise, salt should be BlockSize(c) bytes, and the hash is computed in salted mode.
 func New(salt []byte) hash.Hash {
-	return genericSumhashNew(sumhashCompressor, salt)
+	return sumhashNew(sumhashCompressor, salt)
 }
-
 
 func (d *sumhash215Digest) Reset() {
 	d.Reset()
 }
 
-func (d *sumhash215Digest) Size() int      { return d.Size() }
+func (d *sumhash215Digest) Size() int { return d.Size() }
 
 func (d *sumhash215Digest) BlockSize() int { return d.BlockSize() }
 
