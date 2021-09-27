@@ -33,6 +33,8 @@ func RandomMatrix(rand io.Reader, n int, m int) (Matrix, error) {
 	return A, nil
 }
 
+// RandomMatrixFromSeed creates a random-looking matrix to be used for the sumhash function using the seed bytes.
+// n and m are the columns and rows of the matrix respectively
 func RandomMatrixFromSeed(seed []byte, n int, m int) (Matrix, error) {
 	xof := sha3.NewShake256()
 	binary.Write(xof, binary.LittleEndian, uint16(64)) // u=64
@@ -43,6 +45,7 @@ func RandomMatrixFromSeed(seed []byte, n int, m int) (Matrix, error) {
 	return RandomMatrix(xof, n, m)
 }
 
+// LookupTable generates a lookuptable used to increase hash calculation performance
 func (A Matrix) LookupTable() LookupTable {
 	n := len(A)
 	m := len(A[0])
@@ -79,27 +82,34 @@ func sumBits(as []uint64, b byte) uint64 {
 	return x
 }
 
+// Compressor represents the compression function which is performed on a message
 type Compressor interface {
 	Compress(dst []byte, input []byte)
 	InputLen() int  // len(input)
 	OutputLen() int // len(dst)
 }
 
+// BlockSize returns the block size in bytes
 func BlockSize(c Compressor) int {
 	return c.InputLen() - c.OutputLen()
 }
 
-func (A Matrix) InputLen() int  { return len(A[0]) / 8 }
+// InputLen returns the valid length of a message in bytes
+func (A Matrix) InputLen() int {
+	return len(A[0]) / 8
+}
+
+// OutputLen returns the output len in bytes of the compression function
 func (A Matrix) OutputLen() int { return len(A) * 8 }
 
+// Compress performs the compression algorithm on a message and output into dst
 func (A Matrix) Compress(dst []byte, msg []byte) {
-	if len(msg) != A.InputLen(){
+	if len(msg) != A.InputLen() {
 		panic(fmt.Errorf("could not compress message. input size is wrong. size is %d, expected %d", len(msg), A.InputLen()))
 	}
-	if len(dst) != A.OutputLen(){
+	if len(dst) != A.OutputLen() {
 		panic(fmt.Errorf("could not compress message. output size is wrong size is %d, expected %d", len(msg), A.InputLen()))
 	}
-
 
 	var x uint64
 	for i := range A {
@@ -125,14 +135,22 @@ func (A Matrix) Compress(dst []byte, msg []byte) {
 	}
 }
 
-func (A LookupTable) InputLen() int  { return len(A[0]) }
-func (A LookupTable) OutputLen() int { return len(A) * 8 }
+// InputLen returns the valid length of a message in bytes
+func (A LookupTable) InputLen() int {
+	return len(A[0])
+}
 
+// OutputLen returns the output len in bytes of the compression function
+func (A LookupTable) OutputLen() int {
+	return len(A) * 8
+}
+
+// Compress performs the compression algorithm on a message and output into dst
 func (A LookupTable) Compress(dst []byte, msg []byte) {
-	if len(msg) != A.InputLen(){
+	if len(msg) != A.InputLen() {
 		panic(fmt.Errorf("could not compress message. input size is wrong. size is %d, expected %d", len(msg), A.InputLen()))
 	}
-	if len(dst) != A.OutputLen(){
+	if len(dst) != A.OutputLen() {
 		panic(fmt.Errorf("could not compress message. output size is wrong size is %d, expected %d", len(msg), A.InputLen()))
 	}
 

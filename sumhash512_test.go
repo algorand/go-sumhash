@@ -11,11 +11,11 @@ import (
 )
 
 type testElement struct {
-	input string
+	input  string
 	output string
 }
 
-var testVector = []testElement {
+var testVector = []testElement{
 	{
 		"",
 		"0e7698f535975ebaf1fdcd38819589aa9906595ea9e86c73aded6964651d869a2c1579fbdd9c977ec5f5fc3b61749db57cad898f80f5c69f9a8f013cb7aafedc",
@@ -44,16 +44,13 @@ var testVector = []testElement {
 		"I think, therefore I am. – René Descartes.",
 		"908e03f00e7224cfd875cd42e0879cc8f225d536ac2796b2eb637e19c08fb749c3830e5908074ef92cc97b6feca0de778cd9800de467f41fef60792fcc844dcc",
 	},
-
-
 }
 
-
 func TestSumHash512TestVector(t *testing.T) {
-	for i , element := range testVector{
+	for i, element := range testVector {
 		h := NewSumhash512(nil)
 
-		bytesWritten, err := io.WriteString(h,element.input)
+		bytesWritten, err := io.WriteString(h, element.input)
 		if err != nil {
 			t.Errorf("write returned error : %s", err)
 		}
@@ -63,7 +60,7 @@ func TestSumHash512TestVector(t *testing.T) {
 		}
 		output := h.Sum(nil)
 		if hex.EncodeToString(output) != element.output {
-			t.Errorf("test vector element mismatched on index %d failed! got %s, want %s",i , hex.EncodeToString(output), element.output)
+			t.Errorf("test vector element mismatched on index %d failed! got %s, want %s", i, hex.EncodeToString(output), element.output)
 		}
 	}
 
@@ -184,17 +181,16 @@ func TestSumHash512ChecksumWithValue(t *testing.T) {
 	}
 }
 
-
 func TestSumHash512Sizes(t *testing.T) {
 	h := NewSumhash512(nil)
 	blockSize := h.BlockSize()
-	expectedBlockSizeInBytes := 512/8
+	expectedBlockSizeInBytes := 512 / 8
 	if blockSize != expectedBlockSizeInBytes {
 		t.Errorf("got block size %d, want %d", blockSize, expectedBlockSizeInBytes)
 	}
 
 	size := h.Size()
-	expectedSizeInBytes := 512/8
+	expectedSizeInBytes := 512 / 8
 	if size != expectedSizeInBytes {
 		t.Errorf("got block size %d, want %d", blockSize, expectedBlockSizeInBytes)
 	}
