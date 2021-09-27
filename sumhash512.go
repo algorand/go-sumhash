@@ -18,10 +18,10 @@ type sumhash215Digest struct {
 	d digest
 }
 
-// New create a new sumhash512 context that compute sumhash checksum with 512 byes blocksize
+// NewSumhash512 create a new sumhash512 context that compute sumhash checksum with 512 byes blocksize
 // If salt is nil, then hash.Hash computes a hash output in unsalted mode.
 // Otherwise, salt should be BlockSize(c) bytes, and the hash is computed in salted mode.
-func New(salt []byte) hash.Hash {
+func NewSumhash512(salt []byte) hash.Hash {
 	return sumhashNew(sumhashCompressor, salt)
 }
 

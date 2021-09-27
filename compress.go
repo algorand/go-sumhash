@@ -2,6 +2,7 @@ package sumhash
 
 import (
 	"encoding/binary"
+	"fmt"
 	"io"
 
 	"golang.org/x/crypto/sha3"
@@ -82,8 +83,13 @@ func (A Matrix) InputLen() int  { return len(A[0]) / 8 }
 func (A Matrix) OutputLen() int { return len(A) * 8 }
 
 func (A Matrix) Compress(dst []byte, msg []byte) {
-	_ = msg[len(A[0])/8-1]
-	_ = dst[len(A)*8-1]
+	if len(msg) != A.InputLen(){
+		panic(fmt.Errorf("could not compress message. input size is wrong. size is %d, expected %d", len(msg), A.InputLen()))
+	}
+	if len(dst) != A.OutputLen(){
+		panic(fmt.Errorf("could not compress message. output size is wrong size is %d, expected %d", len(msg), A.InputLen()))
+	}
+
 
 	var x uint64
 	for i := range A {
@@ -103,8 +109,12 @@ func (A LookupTable) InputLen() int  { return len(A[0]) }
 func (A LookupTable) OutputLen() int { return len(A) * 8 }
 
 func (A LookupTable) Compress(dst []byte, msg []byte) {
-	_ = msg[len(A[0])-1]
-	_ = dst[len(A)*8-1]
+	if len(msg) != A.InputLen(){
+		panic(fmt.Errorf("could not compress message. input size is wrong. size is %d, expected %d", len(msg), A.InputLen()))
+	}
+	if len(dst) != A.OutputLen(){
+		panic(fmt.Errorf("could not compress message. output size is wrong size is %d, expected %d", len(msg), A.InputLen()))
+	}
 
 	var x uint64
 	for i := range A {

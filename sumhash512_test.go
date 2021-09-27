@@ -15,7 +15,7 @@ func TestSumHash512(t *testing.T) {
 	v.Write([]byte("sumhash input"))
 	v.Read(input)
 
-	h := New(nil)
+	h := NewSumhash512(nil)
 	bytesWritten, err := h.Write(input)
 	if err != nil {
 		t.Fatalf("write returned error : %s", err)
@@ -43,7 +43,7 @@ func TestSumHash512WithSalt(t *testing.T) {
 	v.Write([]byte("sumhash salt"))
 	v.Read(salt)
 
-	h := New(salt)
+	h := NewSumhash512(salt)
 	bytesWritten, err := h.Write(input)
 	if err != nil {
 		t.Fatalf("write returned error : %s", err)
@@ -65,7 +65,7 @@ func TestSumHash512Reset(t *testing.T) {
 	v.Write([]byte("sumhash"))
 	v.Read(input)
 
-	h := New(nil)
+	h := NewSumhash512(nil)
 	h.Write(input)
 	bytesWritten, err := h.Write(input)
 	if err != nil {
@@ -104,7 +104,7 @@ func TestSumHash512ChecksumWithValue(t *testing.T) {
 	v.Write([]byte("sumhash input"))
 	v.Read(input)
 
-	h := New(nil)
+	h := NewSumhash512(nil)
 	bytesWritten, err := h.Write(input)
 	if err != nil {
 		t.Fatalf("write returned error : %s", err)
@@ -128,7 +128,7 @@ func BenchmarkHashInterface(b *testing.B) {
 	msg := make([]byte, 600)
 
 	rand.Read(msg)
-	h := New(nil)
+	h := NewSumhash512(nil)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
