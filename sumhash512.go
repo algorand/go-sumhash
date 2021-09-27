@@ -4,7 +4,7 @@ import (
 	"hash"
 )
 
-var sumhashCompressor LookupTable
+var sumhashCompressor Compressor
 
 func init() {
 	matrix, err := RandomMatrixFromSeed([]byte("Algorand"), 8, 1024)

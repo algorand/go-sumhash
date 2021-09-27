@@ -62,7 +62,7 @@ func BenchmarkMatrix(b *testing.B) {
 
 func BenchmarkLookupTable(b *testing.B) {
 	A, err := RandomMatrix(rand.Reader, 8, 1024)
-	if err == nil {
+	if err != nil {
 		b.Error(err)
 	}
 	At := A.LookupTable()
@@ -74,4 +74,17 @@ func BenchmarkLookupTable(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		At.Compress(dst, msg)
 	}
+}
+
+func BenchmarkCreateLookupTable(b *testing.B) {
+	A, err := RandomMatrix(rand.Reader, 8, 1024)
+	if err != nil {
+		b.Error(err)
+	}
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		_ = A.LookupTable()
+	}
+
 }

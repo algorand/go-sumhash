@@ -61,11 +61,21 @@ func (A Matrix) LookupTable() LookupTable {
 
 func sumBits(as []uint64, b byte) uint64 {
 	var x uint64
-	for i := 0; i < 8; i++ {
-		if b>>i&1 == 1 {
-			x += as[i]
-		}
-	}
+	//the following code is an optimization for this loop
+	//	for i := 0; i < 8; i++ {
+	//			if b>>i&1 == 1 {
+	//					x += as[i]
+	//				}
+	//		}
+	a0 := as[0] & -uint64(b&1)
+	a1 := as[1] & -uint64((b>>1)&1)
+	a2 := as[2] & -uint64((b>>2)&1)
+	a3 := as[3] & -uint64((b>>3)&1)
+	a4 := as[4] & -uint64((b>>4)&1)
+	a5 := as[5] & -uint64((b>>5)&1)
+	a6 := as[6] & -uint64((b>>6)&1)
+	a7 := as[7] & -uint64((b>>7)&1)
+	x += a0 + a1 + a2 + a3 + a4 + a5 + a6 + a7
 	return x
 }
 
@@ -95,11 +105,21 @@ func (A Matrix) Compress(dst []byte, msg []byte) {
 	for i := range A {
 		x = 0
 		for j := range msg {
-			for b := 0; b < 8; b++ {
-				if (msg[j]>>b)&1 == 1 {
-					x += A[i][8*j+b]
-				}
-			}
+			//the following code is an optimization for this loop
+			//			for b := 0; b < 8; b++ {
+			//					if (msg[j]>>b)&1 == 1 {
+			//							x += A[i][8*j+b]
+			//						}
+			//				}
+			a0 := A[i][8*j] & -uint64(msg[j]&1)
+			a1 := A[i][8*j+1] & -uint64((msg[j]>>1)&1)
+			a2 := A[i][8*j+2] & -uint64((msg[j]>>2)&1)
+			a3 := A[i][8*j+3] & -uint64((msg[j]>>3)&1)
+			a4 := A[i][8*j+4] & -uint64((msg[j]>>4)&1)
+			a5 := A[i][8*j+5] & -uint64((msg[j]>>5)&1)
+			a6 := A[i][8*j+6] & -uint64((msg[j]>>6)&1)
+			a7 := A[i][8*j+7] & -uint64((msg[j]>>7)&1)
+			x += a0 + a1 + a2 + a3 + a4 + a5 + a6 + a7
 		}
 		binary.LittleEndian.PutUint64(dst[8*i:8*i+8], x)
 	}
