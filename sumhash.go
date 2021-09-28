@@ -1,3 +1,4 @@
+// Package sumhash implements the subset-sum hash function.
 package sumhash
 
 import (
