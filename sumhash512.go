@@ -6,6 +6,8 @@ import (
 
 var sumhashCompressor Compressor
 
+const Sumhash512DigestSize, Sumhash512DigestBlockSize = 64, 64
+
 func init() {
 	matrix, err := RandomMatrixFromSeed([]byte("Algorand"), 8, 1024)
 	if err != nil {
@@ -14,25 +16,11 @@ func init() {
 	sumhashCompressor = matrix.LookupTable()
 }
 
-type sumhash215Digest struct {
-	d digest
-}
-
 // NewSumhash512 create a new sumhash512 context that compute sumhash checksum with 512 byes blocksize
 // If salt is nil, then hash.Hash computes a hash output in unsalted mode.
 // Otherwise, salt should be BlockSize(c) bytes, and the hash is computed in salted mode.
 func NewSumhash512(salt []byte) hash.Hash {
-	return sumhashNew(sumhashCompressor, salt)
+	return New(sumhashCompressor, salt)
 }
 
-func (d *sumhash215Digest) Reset() {
-	d.Reset()
-}
 
-func (d *sumhash215Digest) Size() int { return d.Size() }
-
-func (d *sumhash215Digest) BlockSize() int { return d.BlockSize() }
-
-func (d *sumhash215Digest) Write(p []byte) (nn int, err error) {
-	return d.Write(p)
-}

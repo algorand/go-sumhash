@@ -23,7 +23,7 @@ type digest struct {
 // New returns a new hash.Hash computing a sumhash checksum.
 // If salt is nil, then hash.Hash computes a hash output in unsalted mode.
 // Otherwise, salt should be BlockSize(c) bytes, and the hash is computed in salted mode.
-func sumhashNew(c Compressor, salt []byte) hash.Hash {
+func New(c Compressor, salt []byte) hash.Hash {
 	d := new(digest)
 	d.c = c
 	d.size = d.c.OutputLen()
@@ -64,12 +64,13 @@ func (d *digest) BlockSize() int {
 }
 
 func (d *digest) Write(p []byte) (nn int, err error) {
+	nn = len(p)
+
 	// Check if the new length (in bits) overflows our counter capacity.
 	if uint64(nn) >= (1<<61)-d.len {
 		return 0, fmt.Errorf("length overflow: already wrote %d bytes, trying to write %d bytes", d.len, nn)
 	}
 
-	nn = len(p)
 	d.len += uint64(nn)
 	if d.nx > 0 { // continue with existing buffer, if nonempty
 		n := copy(d.x[d.nx:], p)
