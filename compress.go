@@ -18,6 +18,10 @@ type LookupTable [][][256]uint64
 // RandomMatrix generates a random sumhash matrix by reading from rand.
 // n is the number of rows in the matrix and m is the number of bits in the input message.
 func RandomMatrix(rand io.Reader, n int, m int) (Matrix, error) {
+	if m%8 != 0 {
+		panic(fmt.Errorf("m=%d is not a multiple of 8", m))
+	}
+
 	A := make([][]uint64, n)
 	w := make([]byte, 8)
 	for i := range A {
