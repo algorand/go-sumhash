@@ -22,7 +22,7 @@ and run go get without parameters.
 # Usage 
 
 
-Construct a sumhash instacne with block size of 512.
+Construct a sumhash instance with block size of 512.
 
 ```go
 package main
@@ -30,11 +30,11 @@ package main
 import (
 	"fmt"
 
-	sumhash "github.com/algorand/sumhash"
+	"github.com/algorand/sumhash"
 )
 
 func main() {
-	h := sumhash.NewSumhash512(nil)
+	h := sumhash.New512(nil)
 	input := []byte("sumhash input")
 	_, _ = h.Write(input)
 

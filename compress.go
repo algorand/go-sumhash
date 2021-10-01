@@ -67,7 +67,6 @@ func (A Matrix) LookupTable() LookupTable {
 }
 
 func sumBits(as []uint64, b byte) uint64 {
-	var x uint64
 	//the following code is an optimization for this loop
 	//	for i := 0; i < 8; i++ {
 	//			if b>>i&1 == 1 {
@@ -82,8 +81,7 @@ func sumBits(as []uint64, b byte) uint64 {
 	a5 := as[5] & -uint64((b>>5)&1)
 	a6 := as[6] & -uint64((b>>6)&1)
 	a7 := as[7] & -uint64((b>>7)&1)
-	x += a0 + a1 + a2 + a3 + a4 + a5 + a6 + a7
-	return x
+	return a0 + a1 + a2 + a3 + a4 + a5 + a6 + a7
 }
 
 // Compressor represents the compression function which is performed on a message
