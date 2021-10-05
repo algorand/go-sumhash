@@ -53,6 +53,8 @@ func RandomMatrixFromSeed(seed []byte, n int, m int) (Matrix, error) {
 	return RandomMatrix(xof, n, m)
 }
 
+// LookupTable creates the lookup table corresponding to the matrix A,
+// which provides a faster Compress function.
 func (A Matrix) LookupTable() LookupTable {
 	n := len(A)
 	m := len(A[0])
@@ -79,10 +81,14 @@ func sumBits(as []uint64, b byte) uint64 {
 	return x
 }
 
+// Compressor is a one-way compression function.
 type Compressor interface {
+	// Compress compresses the input and writes the result to dst.
 	Compress(dst []byte, input []byte)
-	InputLen() int  // len(input)
-	OutputLen() int // len(dst)
+	// InputLen() specifies len(input) for Compress.
+	InputLen() int
+	// OutputLen() specifies len(dst) for Compress.
+	OutputLen() int
 }
 
 func BlockSize(c Compressor) int {
