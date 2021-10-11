@@ -21,7 +21,8 @@ func init() {
 	sumhashCompressor = matrix.LookupTable()
 }
 
-// New512 create a new sumhash512 context that compute sumhash checksum with 512 bytes blocksize
+// New512 creates a new sumhash512 context that computes a sumhash checksum.
+// The output of the hash function is 64 bytes (512 bits).
 // If salt is nil, then hash.Hash computes a hash output in unsalted mode.
 // Otherwise, salt should be 64 bytes, and the hash is computed in salted mode.
 func New512(salt []byte) hash.Hash {

@@ -17,6 +17,7 @@ type LookupTable [][][256]uint64
 
 // RandomMatrix generates a random sumhash matrix by reading from rand.
 // n is the number of rows in the matrix and m is the number of bits in the input message.
+// m must be a multiple of 8.
 func RandomMatrix(rand io.Reader, n int, m int) (Matrix, error) {
 	if m%8 != 0 {
 		panic(fmt.Errorf("m=%d is not a multiple of 8", m))
@@ -38,7 +39,7 @@ func RandomMatrix(rand io.Reader, n int, m int) (Matrix, error) {
 }
 
 // RandomMatrixFromSeed creates a random-looking matrix to be used for the sumhash function using the seed bytes.
-// n and m are the columns and rows of the matrix respectively
+// n and m are the rows  and columns of the matrix respectively
 func RandomMatrixFromSeed(seed []byte, n int, m int) (Matrix, error) {
 	xof := sha3.NewShake256()
 	binary.Write(xof, binary.LittleEndian, uint16(64)) // u=64
