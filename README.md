@@ -3,24 +3,23 @@ Sumhash
 ====================
 
 
-A Go implementation of Algorand's subset-sum hash function.
+A Go implementation of Algorand’s subset-sum hash function.
 The library exports the subset sum hash function via a `hash.Hash` interface.
 
 
 # Install
 
 ```bash
-go get https://github.com/algorand/sumhash
+go get https://github.com/algorand/go-sumhash
 ```
 Alternatively the same can be achieved if you use import in a package:
 
 ```bash
-import "github.com/algorand/sumhash"
+import "github.com/algorand/go-sumhash"
 ```
 and run go get without parameters.
 
 # Usage 
-
 
 Construct a sumhash instance with block size of 512.
 
@@ -30,7 +29,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/algorand/sumhash"
+	"github.com/algorand/go-sumhash"
 )
 
 func main() {
@@ -53,4 +52,4 @@ go test ./...
 # Spec
 
 The specification of the function as well as the security parameters
-can be found [here](https://github.com/algorand/snark-friendly-crypto/tree/master/spec)  
+can be found [here](https://github.com/algorand/snark-friendly-crypto/tree/master/spec)
