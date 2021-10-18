@@ -111,7 +111,7 @@ func (A Matrix) Compress(dst []byte, msg []byte) {
 		panic(fmt.Errorf("could not compress message. input size is wrong. size is %d, expected %d", len(msg), A.InputLen()))
 	}
 	if len(dst) != A.OutputLen() {
-		panic(fmt.Errorf("could not compress message. output size is wrong size is %d, expected %d", len(msg), A.OutputLen()))
+		panic(fmt.Errorf("could not compress message. output size is wrong size is %d, expected %d", len(dst), A.OutputLen()))
 	}
 
 	// this allows go to eliminate the bound check when accessing the slice
@@ -158,7 +158,7 @@ func (A LookupTable) Compress(dst []byte, msg []byte) {
 		panic(fmt.Errorf("could not compress message. input size is wrong. size is %d, expected %d", len(msg), A.InputLen()))
 	}
 	if len(dst) != A.OutputLen() {
-		panic(fmt.Errorf("could not compress message. output size is wrong size is %d, expected %d", len(msg), A.OutputLen()))
+		panic(fmt.Errorf("could not compress message. output size is wrong size is %d, expected %d", len(dst), A.OutputLen()))
 	}
 
 	// this allows go to eliminate the bound check when accessing the slice

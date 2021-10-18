@@ -4,7 +4,10 @@ import (
 	"hash"
 )
 
-var sumhashCompressor Compressor
+// SumhashCompressor is a matrix derived from a seed which is used by the
+// sumhash512 interface. In order the gain speed, this matrix can be used to compress
+// input which have exactly size of InputLen()
+var SumhashCompressor Compressor
 
 // Sumhash512DigestSize  The size in bytes of the sumhash checksum
 const Sumhash512DigestSize = 64
@@ -18,7 +21,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	sumhashCompressor = matrix.LookupTable()
+	SumhashCompressor = matrix.LookupTable()
 }
 
 // New512 creates a new sumhash512 context that computes a sumhash checksum.
@@ -28,5 +31,5 @@ func init() {
 // the context returned by this function reference the salt argument. any changes
 // might affect the hash calculation
 func New512(salt []byte) hash.Hash {
-	return New(sumhashCompressor, salt)
+	return New(SumhashCompressor, salt)
 }
