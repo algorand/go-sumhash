@@ -24,6 +24,8 @@ type digest struct {
 // New returns a new hash.Hash computing a sumhash checksum.
 // If salt is nil, then hash.Hash computes a hash output in unsalted mode.
 // Otherwise, salt should be BlockSize(c) bytes, and the hash is computed in salted mode.
+// the context returned by this function reference the salt argument. any changes
+// might affect the hash calculation
 func New(c Compressor, salt []byte) hash.Hash {
 	d := new(digest)
 	d.c = c

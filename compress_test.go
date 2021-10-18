@@ -46,7 +46,7 @@ func TestCompression(t *testing.T) {
 }
 
 func BenchmarkMatrix(b *testing.B) {
-	A, err := RandomMatrix(rand.Reader, 14, 14*64*2)
+	A, err := RandomMatrix(rand.Reader, 8, 1024)
 	if err != nil {
 		b.Error(err)
 	}
@@ -54,9 +54,10 @@ func BenchmarkMatrix(b *testing.B) {
 	dst := make([]byte, A.OutputLen())
 	rand.Read(msg)
 	b.ResetTimer()
-
 	for i := 0; i < b.N; i++ {
 		A.Compress(dst, msg)
+		copy(msg[0:64], msg[64:128])
+		copy(msg[64:128], dst)
 	}
 }
 
@@ -65,7 +66,9 @@ func BenchmarkLookupTable(b *testing.B) {
 	if err != nil {
 		b.Error(err)
 	}
+
 	At := A.LookupTable()
+
 	msg := make([]byte, A.InputLen())
 	dst := make([]byte, A.OutputLen())
 	rand.Read(msg)
@@ -73,6 +76,8 @@ func BenchmarkLookupTable(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		At.Compress(dst, msg)
+		copy(msg[0:64], msg[64:128])
+		copy(msg[64:128], dst)
 	}
 }
 
@@ -88,3 +93,4 @@ func BenchmarkCreateLookupTable(b *testing.B) {
 	}
 
 }
+

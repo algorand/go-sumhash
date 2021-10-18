@@ -10,7 +10,7 @@ The library exports the subset sum hash function via a `hash.Hash` interface.
 # Install
 
 ```bash
-go get https://github.com/algorand/go-sumhash
+go get github.com/algorand/go-sumhash
 ```
 Alternatively the same can be achieved if you use import in a package:
 
