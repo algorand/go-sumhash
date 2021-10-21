@@ -33,7 +33,7 @@ import (
 )
 
 func main() {
-	h := sumhash.New512(nil)
+	h, _ := sumhash.New512(nil)
 	input := []byte("sumhash input")
 	_, _ = h.Write(input)
 

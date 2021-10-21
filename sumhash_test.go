@@ -25,8 +25,14 @@ func TestHashResult(t *testing.T) {
 	}
 	At := A.LookupTable()
 
-	h1 := New(A, nil)
-	h2 := New(At, nil)
+	h1, err := New(A, nil)
+	if err != nil {
+		t.Error(err)
+	}
+	h2, err := New(At, nil)
+	if err != nil {
+		t.Error(err)
+	}
 
 	bytesWritten, err := io.WriteString(h1, testElement[0])
 	if err != nil || bytesWritten != len(testElement[0]) {
@@ -63,8 +69,14 @@ func testHashParams(t *testing.T, n int, m int) {
 	}
 	At := A.LookupTable()
 
-	h1 := New(A, nil)
-	h2 := New(At, nil)
+	h1, err := New(A, nil)
+	if err != nil {
+		t.Error(err)
+	}
+	h2, err := New(At, nil)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if h1.Size() != n*8 || h1.BlockSize() != m/8-n*8 {
 		t.Errorf("h1 has unexpected size/blocksize values")

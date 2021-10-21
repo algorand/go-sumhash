@@ -20,7 +20,7 @@ type LookupTable [][][256]uint64
 // m must be a multiple of 8.
 func RandomMatrix(rand io.Reader, n int, m int) (Matrix, error) {
 	if m%8 != 0 {
-		panic(fmt.Errorf("m=%d is not a multiple of 8", m))
+		return Matrix{}, fmt.Errorf("m=%d is not a multiple of 8", m)
 	}
 
 	A := make([][]uint64, n)
@@ -87,7 +87,7 @@ func sumBits(as []uint64, b byte) uint64 {
 
 // Compressor represents the compression function which is performed on a message
 type Compressor interface {
-	Compress(dst []byte, input []byte)
+	Compress(dst []byte, input []byte) error
 	InputLen() int  // len(input)
 	OutputLen() int // len(dst)
 }
@@ -106,12 +106,12 @@ func (A Matrix) InputLen() int {
 func (A Matrix) OutputLen() int { return len(A) * 8 }
 
 // Compress performs the compression algorithm on a message and output into dst
-func (A Matrix) Compress(dst []byte, msg []byte) {
+func (A Matrix) Compress(dst []byte, msg []byte) error {
 	if len(msg) != A.InputLen() {
-		panic(fmt.Errorf("could not compress message. input size is wrong. size is %d, expected %d", len(msg), A.InputLen()))
+		return fmt.Errorf("could not compress message. input size is wrong. size is %d, expected %d", len(msg), A.InputLen())
 	}
 	if len(dst) != A.OutputLen() {
-		panic(fmt.Errorf("could not compress message. output size is wrong size is %d, expected %d", len(dst), A.OutputLen()))
+		return fmt.Errorf("could not compress message. output size is wrong size is %d, expected %d", len(dst), A.OutputLen())
 	}
 
 	// this allows go to eliminate the bound check when accessing the slice
@@ -140,6 +140,7 @@ func (A Matrix) Compress(dst []byte, msg []byte) {
 		}
 		binary.LittleEndian.PutUint64(dst[8*i:8*i+8], x)
 	}
+	return nil
 }
 
 // InputLen returns the valid length of a message in bytes
@@ -153,12 +154,12 @@ func (A LookupTable) OutputLen() int {
 }
 
 // Compress performs the compression algorithm on a message and output into dst
-func (A LookupTable) Compress(dst []byte, msg []byte) {
+func (A LookupTable) Compress(dst []byte, msg []byte) error {
 	if len(msg) != A.InputLen() {
-		panic(fmt.Errorf("could not compress message. input size is wrong. size is %d, expected %d", len(msg), A.InputLen()))
+		return fmt.Errorf("could not compress message. input size is wrong. size is %d, expected %d", len(msg), A.InputLen())
 	}
 	if len(dst) != A.OutputLen() {
-		panic(fmt.Errorf("could not compress message. output size is wrong size is %d, expected %d", len(dst), A.OutputLen()))
+		return fmt.Errorf("could not compress message. output size is wrong size is %d, expected %d", len(dst), A.OutputLen())
 	}
 
 	// this allows go to eliminate the bound check when accessing the slice
@@ -173,4 +174,5 @@ func (A LookupTable) Compress(dst []byte, msg []byte) {
 		}
 		binary.LittleEndian.PutUint64(dst[8*i:8*i+8], x)
 	}
+	return nil
 }

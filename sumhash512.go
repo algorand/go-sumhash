@@ -30,6 +30,6 @@ func init() {
 // Otherwise, salt should be 64 bytes, and the hash is computed in salted mode.
 // the context returned by this function reference the salt argument. any changes
 // might affect the hash calculation
-func New512(salt []byte) hash.Hash {
+func New512(salt []byte) (hash.Hash, error) {
 	return New(SumhashCompressor, salt)
 }

@@ -26,7 +26,7 @@ type digest struct {
 // Otherwise, salt should be BlockSize(c) bytes, and the hash is computed in salted mode.
 // the context returned by this function reference the salt argument. any changes
 // might affect the hash calculation
-func New(c Compressor, salt []byte) hash.Hash {
+func New(c Compressor, salt []byte) (hash.Hash, error) {
 	d := new(digest)
 	d.c = c
 	d.size = d.c.OutputLen()
@@ -35,12 +35,12 @@ func New(c Compressor, salt []byte) hash.Hash {
 	d.h = make([]byte, c.OutputLen())
 
 	if salt != nil && len(salt) != d.blockSize {
-		panic(fmt.Sprintf("bad salt size: want %d, got %d", d.blockSize, len(salt)))
+		return nil, fmt.Errorf("bad salt size: want %d, got %d", d.blockSize, len(salt))
 	}
 	d.salt = salt
 
 	d.Reset()
-	return d
+	return d, nil
 }
 
 func (d *digest) Reset() {
@@ -71,7 +71,7 @@ func (d *digest) Write(p []byte) (nn int, err error) {
 
 	// Check if the new length (in bits) overflows our counter capacity.
 	if uint64(nn) >= (1<<61)-d.len {
-		panic(fmt.Errorf("length overflow: already wrote %d bytes, trying to write %d bytes", d.len, nn))
+		return 0, fmt.Errorf("length overflow: already wrote %d bytes, trying to write %d bytes", d.len, nn)
 	}
 
 	d.len += uint64(nn)

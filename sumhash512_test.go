@@ -48,7 +48,10 @@ var testVector = []testElement{
 
 func TestSumHash512TestVector(t *testing.T) {
 	for i, element := range testVector {
-		h := New512(nil)
+		h, err := New512(nil)
+		if err != nil {
+			t.Error(err)
+		}
 
 		bytesWritten, err := io.WriteString(h, element.input)
 		if err != nil {
@@ -72,7 +75,10 @@ func TestSumHash512(t *testing.T) {
 	v.Write([]byte("sumhash input"))
 	v.Read(input)
 
-	h := New512(nil)
+	h, err := New512(nil)
+	if err != nil {
+		t.Error(err)
+	}
 	bytesWritten, err := h.Write(input)
 	if err != nil {
 		t.Errorf("write returned error : %s", err)
@@ -100,7 +106,10 @@ func TestSumHash512WithSalt(t *testing.T) {
 	v.Write([]byte("sumhash salt"))
 	v.Read(salt)
 
-	h := New512(salt)
+	h, err := New512(salt)
+	if err != nil {
+		t.Error(err)
+	}
 	bytesWritten, err := h.Write(input)
 	if err != nil {
 		t.Errorf("write returned error : %s", err)
@@ -122,7 +131,10 @@ func TestSumHash512Reset(t *testing.T) {
 	v.Write([]byte("sumhash"))
 	v.Read(input)
 
-	h := New512(nil)
+	h, err := New512(nil)
+	if err != nil {
+		t.Error(err)
+	}
 	h.Write(input)
 	bytesWritten, err := h.Write(input)
 	if err != nil {
@@ -161,7 +173,10 @@ func TestSumHash512ChecksumWithValue(t *testing.T) {
 	v.Write([]byte("sumhash input"))
 	v.Read(input)
 
-	h := New512(nil)
+	h, err := New512(nil)
+	if err != nil {
+		t.Error(err)
+	}
 	bytesWritten, err := h.Write(input)
 	if err != nil {
 		t.Errorf("write returned error : %s", err)
@@ -182,7 +197,10 @@ func TestSumHash512ChecksumWithValue(t *testing.T) {
 }
 
 func TestSumHash512Sizes(t *testing.T) {
-	h := New512(nil)
+	h, err := New512(nil)
+	if err != nil {
+		t.Error(err)
+	}
 	blockSize := h.BlockSize()
 	expectedBlockSizeInBytes := 512 / 8
 	if blockSize != expectedBlockSizeInBytes {
@@ -200,7 +218,10 @@ func BenchmarkHashInterface(b *testing.B) {
 	msg := make([]byte, 600)
 
 	rand.Read(msg)
-	h := New512(nil)
+	h, err := New512(nil)
+	if err != nil {
+		b.Error(err)
+	}
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
