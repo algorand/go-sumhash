@@ -26,10 +26,17 @@ func init() {
 
 // New512 creates a new sumhash512 context that computes a sumhash checksum.
 // The output of the hash function is 64 bytes (512 bits).
-// If salt is nil, then hash.Hash computes a hash output in unsalted mode.
-// Otherwise, salt should be 64 bytes, and the hash is computed in salted mode.
-// the context returned by this function reference the salt argument. any changes
-// might affect the hash calculation
-func New512(salt []byte) (hash.Hash, error) {
+// The returned hash.Hash computes a hash output in unsalted mode.
+func New512() hash.Hash {
+	ret, _ := New(SumhashCompressor, nil)
+	return ret
+}
+
+// New512Salted creates a new sumhash512 context that computes a sumhash checksum.
+// The output of the hash function is 64 bytes (512 bits).
+// Salt should be 64 bytes, and the hash is computed in salted mode.
+// The hash.Hash context returned by this function will reference the salt slice:
+// any changes might affect the hash calculation.
+func New512Salted(salt []byte) (hash.Hash, error) {
 	return New(SumhashCompressor, salt)
 }
