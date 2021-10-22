@@ -71,7 +71,7 @@ func (d *digest) Write(p []byte) (nn int, err error) {
 
 	// Check if the new length (in bits) overflows our counter capacity.
 	if uint64(nn) >= (1<<61)-d.len {
-		return 0, fmt.Errorf("length overflow: already wrote %d bytes, trying to write %d bytes", d.len, nn)
+		panic(fmt.Errorf("length overflow: already wrote %d bytes, trying to write %d bytes", d.len, nn))
 	}
 
 	d.len += uint64(nn)
