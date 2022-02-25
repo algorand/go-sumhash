@@ -93,4 +93,3 @@ func BenchmarkCreateLookupTable(b *testing.B) {
 	}
 
 }
-

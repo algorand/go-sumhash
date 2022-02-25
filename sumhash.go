@@ -125,8 +125,9 @@ func (d *digest) checkSum() []byte {
 	bitlen := d.len << 3 // number of input bits written
 
 	// Padding. Add a 1 bit and 0 bits until P bytes mod B.
+	// The padding byte is 0x01 since sumhash reads bits in little-endian order.
 	tmp := make([]byte, B)
-	tmp[0] = 0x80
+	tmp[0] = 0x01
 	if d.len%B < P {
 		d.Write(tmp[0 : P-d.len%B])
 	} else {

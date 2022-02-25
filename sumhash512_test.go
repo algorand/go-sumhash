@@ -18,31 +18,31 @@ type testElement struct {
 var testVector = []testElement{
 	{
 		"",
-		"0e7698f535975ebaf1fdcd38819589aa9906595ea9e86c73aded6964651d869a2c1579fbdd9c977ec5f5fc3b61749db57cad898f80f5c69f9a8f013cb7aafedc",
+		"591591c93181f8f90054d138d6fa85b63eeeb416e6fd201e8375ba05d3cb55391047b9b64e534042562cc61944930c0075f906f16710cdade381ee9dd47d10a0",
 	},
 	{
 		"a",
-		"4aa8bd2e6d455ff812cecd8dcd258e1c9f97561888e3474c9740c71ad31c86522d980f522e2964c733d4f52d94897ce143674b20fc41feae95ee092154925eda",
+		"ea067eb25622c633f5ead70ab83f1d1d76a7def8d140a587cb29068b63cb6407107aceecfdffa92579ed43db1eaa5bbeb4781223a6e07dd5b5a12d5e8bde82c6",
 	},
 	{
 		"ab",
-		"a33ae2accf2d45021fa57831ed0152a24aa5553a45f240a1d29b5e732f87b697b50c5e4fe25f442b3e30ec035a44ae95045912d59ae5993f05575b6bb3017188",
+		"ef09d55b6add510f1706a52c4b45420a6945d0751d73b801cbc195a54bc0ade0c9ebe30e09c2c00864f2bd1692eba79500965925e2be2d1ac334425d8d343694",
 	},
 	{
 		"abc",
-		"3fb641e5b7ffdce77abf80104b458dab1a0012729d158f4dac96a43993b26ad1b58261f090e50b20e242d02e531834aa5a76c5a99ab2e49d01b282eceeae6ec8",
+		"a8e9b8259a93b8d2557434905790114a2a2e979fbdc8aa6fd373315a322bf0920a9b49f3dc3a744d8c255c46cd50ff196415c8245cdbb2899dec453fca2ba0f4",
 	},
 	{
 		"abcd",
-		"e5775a6f14bdb1cca1b0c2378e9c0c140332efe9bb48ebe32236a52902580e1ad199670cb3f9a773931a4b1467e899e91dd23bc95a4929f132ef9b34fd1c3de4",
+		"1d4277f17e522c4607bc2912bb0d0ac407e60e3c86e2b6c7daa99e1f740fe2b4fc928defad8e1ccc4e7d96b79896ffe086836c172a3db40a154d2229484f359b",
 	},
 	{
 		"You must be the change you wish to see in the world. -Mahatma Gandhi",
-		"2495462abaa3b2eaa84b32eae9d97e1031dfde9cfebe78e8de1df110a0f1a80f918e4f652b8f6c754698413ebbfac41f74ec1a25111769a7633151e49b90ecfe",
+		"5c5f63ac24392d640e5799c4164b7cc03593feeec85844cc9691ea0612a97caabc8775482624e1cd01fb8ce1eca82a17dd9d4b73e00af4c0468fd7d8e6c2e4b5",
 	},
 	{
 		"I think, therefore I am. – Rene Descartes.",
-		"4a22a6207adb7a978a980c8bfb173d96d24d5faf3f22848f8bd4de09c24f11180d3eeafdc06a13d3f9e62458460ece5587e0b1cbca875663cf19d146788b1dd4",
+		"2d4583cdb18710898c78ec6d696a86cc2a8b941bb4d512f9d46d96816d95cbe3f867c9b8bd31964406c847791f5669d60b603c9c4d69dadcb87578e613b60b7a",
 	},
 }
 
@@ -83,7 +83,7 @@ func TestSumHash512(t *testing.T) {
 	}
 
 	sum := h.Sum(nil)
-	expectedSum := "1ad6dafe03f330e06554300ecc24a59d41ec6afe387c34f4d9a2d971e71ae751823f520135cdc766ba7886a0a2a8954fd17ecae64f58e4431e572571e0f0a9aa"
+	expectedSum := "43dc59ca43da473a3976a952f1c33a2b284bf858894ef7354b8fc0bae02b966391070230dd23e0713eaf012f7ad525f198341000733aa87a904f7053ce1a43c6"
 	if hex.EncodeToString(sum) != expectedSum {
 		t.Errorf("got %x, want %s", sum, expectedSum)
 	}
@@ -110,7 +110,7 @@ func TestSumHash512WithSalt(t *testing.T) {
 		t.Errorf("write return %d expected %d", bytesWritten, len(input))
 	}
 	sum := h.Sum(nil)
-	expectedSum := "bc0f4251957352da5102970a32ecad694d88e9f9c4230a2b13d2c7037107245e64e1f7e7dbeca625e2f7d1cd5f63d9070e0255b687301ade29fab952dd44abc7"
+	expectedSum := "c9be08eed13218c30f8a673f7694711d87dfec9c7b0cb1c8e18bf68420d4682530e45c1cd5d886b1c6ab44214161f06e091b0150f28374d6b5ca0c37efc2bca7"
 	if hex.EncodeToString(sum) != expectedSum {
 		t.Errorf("got %x, want %s", sum, expectedSum)
 	}
@@ -149,7 +149,7 @@ func TestSumHash512Reset(t *testing.T) {
 	}
 
 	sum := h.Sum(nil)
-	expectedSum := "1ad6dafe03f330e06554300ecc24a59d41ec6afe387c34f4d9a2d971e71ae751823f520135cdc766ba7886a0a2a8954fd17ecae64f58e4431e572571e0f0a9aa"
+	expectedSum := "43dc59ca43da473a3976a952f1c33a2b284bf858894ef7354b8fc0bae02b966391070230dd23e0713eaf012f7ad525f198341000733aa87a904f7053ce1a43c6"
 	if hex.EncodeToString(sum) != expectedSum {
 		t.Errorf("got %x, want %s", sum, expectedSum)
 	}
@@ -174,10 +174,10 @@ func TestSumHash512ChecksumWithValue(t *testing.T) {
 	msgPrefix := make([]byte, 64)
 	rand.Read(msgPrefix)
 	sum := h.Sum(msgPrefix)
-	dec, err := hex.DecodeString("1ad6dafe03f330e06554300ecc24a59d41ec6afe387c34f4d9a2d971e71ae751823f520135cdc766ba7886a0a2a8954fd17ecae64f58e4431e572571e0f0a9aa")
+	dec, err := hex.DecodeString("43dc59ca43da473a3976a952f1c33a2b284bf858894ef7354b8fc0bae02b966391070230dd23e0713eaf012f7ad525f198341000733aa87a904f7053ce1a43c6")
 	expectedSum := append(msgPrefix, dec...)
 	if !bytes.Equal(sum, expectedSum) {
-		t.Errorf("got %x, want %s", hex.EncodeToString(sum), hex.EncodeToString(expectedSum))
+		t.Errorf("got %x, want %x", sum, expectedSum)
 	}
 }
 
