@@ -15,9 +15,11 @@ type Matrix [][]uint64
 // Its dimensions are [n][m/8][256]uint64.
 type LookupTable [][][256]uint64
 
-// RandomMatrix generates a random sumhash matrix by reading from rand.
-// n is the number of rows in the matrix and m is the number of bits in the input message.
-// m must be a multiple of 8.
+// RandomMatrix generates a random sumhash matrix by reading from rand. n is the
+// number of rows in the matrix and m is the number of bits in the input
+// message. m must be a multiple of 8. Each byte read from rand is interpreted
+// as an 8-bit string in LE/LSB encoding, consistent with SHA-3 (NIST FIPS 202,
+// Appendix B). See also: https://keccak.team/keccak_bits_and_bytes.html
 func RandomMatrix(rand io.Reader, n int, m int) (Matrix, error) {
 	if m%8 != 0 {
 		panic(fmt.Errorf("m=%d is not a multiple of 8", m))
@@ -38,10 +40,12 @@ func RandomMatrix(rand io.Reader, n int, m int) (Matrix, error) {
 	return A, nil
 }
 
-// RandomMatrixFromSeed creates a random-looking matrix to be used for the sumhash function using the seed bytes.
-// n and m are the rows  and columns of the matrix respectively
+// RandomMatrixFromSeed creates a random-looking matrix to be used for the
+// sumhash function using the seed bytes. n and m are the rows and columns of
+// the matrix respectively.
 func RandomMatrixFromSeed(seed []byte, n int, m int) (Matrix, error) {
 	xof := sha3.NewShake256()
+	// SHAKE treats bytes as LSB-first 8-bit strings, so this conforms to the sumhash spec.
 	binary.Write(xof, binary.LittleEndian, uint16(64)) // u=64
 	binary.Write(xof, binary.LittleEndian, uint16(n))
 	binary.Write(xof, binary.LittleEndian, uint16(m))
@@ -50,7 +54,7 @@ func RandomMatrixFromSeed(seed []byte, n int, m int) (Matrix, error) {
 	return RandomMatrix(xof, n, m)
 }
 
-// LookupTable generates a lookuptable used to increase hash calculation performance
+// LookupTable generates a lookup table used to increase hash calculation performance.
 func (A Matrix) LookupTable() LookupTable {
 	n := len(A)
 	m := len(A[0])
