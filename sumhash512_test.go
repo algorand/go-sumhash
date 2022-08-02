@@ -63,7 +63,6 @@ func TestSumHash512TestVector(t *testing.T) {
 			t.Errorf("test vector element mismatched on index %d failed! got %s, want %s", i, hex.EncodeToString(output), element.output)
 		}
 	}
-
 }
 
 func TestSumHash512(t *testing.T) {
@@ -175,6 +174,9 @@ func TestSumHash512ChecksumWithValue(t *testing.T) {
 	rand.Read(msgPrefix)
 	sum := h.Sum(msgPrefix)
 	dec, err := hex.DecodeString("43dc59ca43da473a3976a952f1c33a2b284bf858894ef7354b8fc0bae02b966391070230dd23e0713eaf012f7ad525f198341000733aa87a904f7053ce1a43c6")
+	if err != nil {
+		t.Errorf("hex decoding: %s", err)
+	}
 	expectedSum := append(msgPrefix, dec...)
 	if !bytes.Equal(sum, expectedSum) {
 		t.Errorf("got %x, want %x", sum, expectedSum)
@@ -192,7 +194,7 @@ func TestSumHash512Sizes(t *testing.T) {
 	size := h.Size()
 	expectedSizeInBytes := 512 / 8
 	if size != expectedSizeInBytes {
-		t.Errorf("got block size %d, want %d", blockSize, expectedBlockSizeInBytes)
+		t.Errorf("got block %d, want %d", size, expectedSizeInBytes)
 	}
 }
 
